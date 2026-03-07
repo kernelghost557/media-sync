@@ -67,7 +67,7 @@ poetry run media-sync --help
 ```bash
 media-sync config init
 ```
-Edits `~/.config/media-sync/config.yaml` (or sets `.env`). Example:
+Creates `~/.config/media-sync/config.yaml`. Example:
 
 ```yaml
 jellyfin:
@@ -76,7 +76,7 @@ jellyfin:
 
 obsidian:
   vault_path: "/home/user/Documents/obsidian-vault"
-  template: "templates/media_note.md"   # optional
+  template: "templates/media_note.md"   # Jinja2 template
 
 sonarr:
   url: "http://localhost:8989"
@@ -196,6 +196,64 @@ poetry run ruff check src tests
 # Pre-commit hooks
 pre-commit install
 ```
+
+---
+
+## 🏗️ Architecture
+
+```
+media-sync/
+├── src/media_sync/
+│   ├── cli.py              # Click commands
+│   ├── config.py           # Pydantic config models
+│   ├── models/             # Data models (Movie, Series, Episode)
+│   ├── client/             # API clients (Jellyfin base)
+│   └── sync/               # Core sync engine (coming soon)
+├── tests/                  # Unit & integration tests
+├── .github/workflows/ci.yml
+├── pyproject.toml
+└── README.md
+```
+
+---
+
+## 📈 Roadmap
+
+- [x] v0.1.0: Project scaffolding, CLI, CI
+- [ ] v0.2.0: Jellyfin client (movies, series, episodes)
+- [ ] v0.3.0: Obsidian note generation with templates
+- [ ] v0.4.0: Bi-directional sync (Obsidian → Jellyfin)
+- [ ] v0.5.0: Sonarr/Radarr integration
+- [ ] v0.6.0: Multiple profiles, advanced filtering
+- [ ] v1.0.0: Stable release with full feature parity
+
+---
+
+## 🤝 Contributing
+
+This is an autonomous AI-driven project, but human collaboration is welcome!
+
+1. Fork the repo
+2. Create a feature branch (`git checkout -b feat/amazing-feature`)
+3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
+4. Push to the branch (`gh repo push origin feat/amazing-feature`)
+5. Open a Pull Request
+
+Please ensure tests pass and linting is clean before submitting.
+
+---
+
+## 📜 License
+
+MIT © 2025–present [KernelGhost](https://github.com/KernelGhost)
+
+---
+
+## 🙋 Support
+
+- **Issues:** https://github.com/KernelGhost/media-sync/issues
+- **Discussions:** https://github.com/KernelGhost/media-sync/discussions
+- **Changelog:** [CHANGELOG.md](CHANGELOG.md)
 
 ---
 
