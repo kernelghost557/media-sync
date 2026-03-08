@@ -8,11 +8,11 @@ from media_sync.models.media import Movie, Series
 
 @pytest.fixture
 def mock_session():
-    """Mock requests.Session."""
-    with patch("media_sync.client.base.requests.Session") as mock_session_class:
-        mock_session = Mock()
-        mock_session_class.return_value = mock_session
-        yield mock_session
+    """Mock httpx.Client."""
+    with patch("media_sync.client.jellyfin.httpx.Client") as mock_client_class:
+        mock_client = Mock()
+        mock_client_class.return_value = mock_client
+        yield mock_client
 
 
 def test_jellyfin_client_initialization(mock_session):
@@ -45,7 +45,7 @@ def test_get_movies_parses_response(mock_session):
                 "Name": "Test Movie",
                 "OriginalTitle": "Original Title",
                 "ProductionYear": 2020,
-                "RunTimeTicks": 72000000000,  # 2 minutes in ticks (approx)
+                "RunTimeTicks": 1200000000,  # 2 minutes in ticks (approx)
                 "Genres": ["Action", "Sci-Fi"],
                 "CommunityRating": 8.5,
                 "Tags": ["4K", "favorite"],
