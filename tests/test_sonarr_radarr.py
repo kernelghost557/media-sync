@@ -5,7 +5,7 @@ from media_sync.client.sonarr import SonarrClient
 from media_sync.client.radarr import RadarrClient
 
 
-def test_sonarr_get_series(mock_requests):
+def test_sonarr_get_series():
     # mock_requests от pytest mock будет заменять requests.Session
     # Но мы используем BaseAPIClient, который использует requests.Session напрямую
     with patch("media_sync.client.base.requests.Session") as mock_session_class:
@@ -21,7 +21,7 @@ def test_sonarr_get_series(mock_requests):
         assert series[0]["title"] == "Test Series"
 
 
-def test_sonarr_healthcheck(mock_requests):
+def test_sonarr_healthcheck():
     with patch("media_sync.client.base.requests.Session") as mock_session_class:
         mock_session = Mock()
         mock_session_class.return_value = mock_session
@@ -35,7 +35,7 @@ def test_sonarr_healthcheck(mock_requests):
         assert health["version"] == "3.0.9"
 
 
-def test_radarr_get_movies(mock_requests):
+def test_radarr_get_movies():
     with patch("media_sync.client.base.requests.Session") as mock_session_class:
         mock_session = Mock()
         mock_session_class.return_value = mock_session
@@ -51,7 +51,7 @@ def test_radarr_get_movies(mock_requests):
         assert movies[0]["title"] == "Test Movie"
 
 
-def test_radarr_healthcheck(mock_requests):
+def test_radarr_healthcheck():
     with patch("media_sync.client.base.requests.Session") as mock_session_class:
         mock_session = Mock()
         mock_session_class.return_value = mock_session
