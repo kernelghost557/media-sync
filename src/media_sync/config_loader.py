@@ -46,4 +46,4 @@ class ConfigLoader:
             config_path = Path.home() / ".config" / "media-sync" / "config.yaml"
         raw = self.load_yaml(config_path)
         raw = self.merge_env(raw)
-        return MediaSyncConfig.from_dict(raw)  # Implement from_dict in MediaSyncConfig
+        return MediaSyncConfig.from_yaml(raw)

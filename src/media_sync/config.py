@@ -41,18 +41,50 @@ class ObsidianConfig(BaseModel):
         return v
 
 
+class SonarrConfig(BaseModel):
+    """Sonarr connection configuration."""
+
+    url: str = Field(..., description="Base URL of Sonarr server")
+    api_key: str = Field(..., description="API key for authentication")
+
+    @field_validator("url")
+    @classmethod
+    def normalize_url(cls, v: str) -> str:
+        """Remove trailing slash from URL."""
+        return v.rstrip("/")
+
+
+class RadarrConfig(BaseModel):
+    """Radarr connection configuration."""
+
+    url: str = Field(..., description="Base URL of Radarr server")
+    api_key: str = Field(..., description="API key for authentication")
+
+    @field_validator("url")
+    @classmethod
+    def normalize_url(cls, v: str) -> str:
+        """Remove trailing slash from URL."""
+        return v.rstrip("/")
+
+
 class MediaSyncConfig(BaseModel):
     """Main configuration container."""
 
     jellyfin: Optional[JellyfinConfig] = None
+    sonarr: Optional[SonarrConfig] = None
+    radarr: Optional[RadarrConfig] = None
     obsidian: Optional[ObsidianConfig] = None
 
     @classmethod
     def from_yaml(cls, data: dict) -> "MediaSyncConfig":
         """Create config from YAML dictionary."""
         jellyfin_data = data.get("jellyfin")
+        sonarr_data = data.get("sonarr")
+        radarr_data = data.get("radarr")
         obsidian_data = data.get("obsidian")
         return cls(
             jellyfin=JellyfinConfig(**jellyfin_data) if jellyfin_data else None,
+            sonarr=SonarrConfig(**sonarr_data) if sonarr_data else None,
+            radarr=RadarrConfig(**radarr_data) if radarr_data else None,
             obsidian=ObsidianConfig(**obsidian_data) if obsidian_data else None,
         )
