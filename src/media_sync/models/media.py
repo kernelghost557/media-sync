@@ -3,25 +3,32 @@
 from datetime import datetime
 from typing import Optional
 
+from pydantic import BaseModel, ConfigDict
+
 
 class MediaItem(BaseModel):
     """Base model for any media item."""
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+        alias_generator=lambda s: ''.join(word.capitalize() for word in s.split('_'))
+    )
 
     id: str
     name: str
     original_title: Optional[str] = None
     year: Optional[int] = None
     overview: Optional[str] = None
-    genre: list[str] = []
+    genres: list[str] = []  # API sends "Genres"
     community_rating: Optional[float] = None
     official_rating: Optional[str] = None
     run_time_ticks: Optional[int] = None  # ticks (100ns per tick)
     production_year: Optional[int] = None
-    premier_date: Optional[str] = None  # ISO date string
+    premiere_date: Optional[str] = None  # ISO date string, API sends "PremiereDate"
     path: Optional[str] = None
     has_icon: bool = False
     has_backdrop: bool = False
-    tag：list[str] = []  # user tags
+    tags: list[str] = []  # user tags, API sends "Tags"
 
     @property
     def duration_minutes(self) -> Optional[int]:
@@ -62,13 +69,18 @@ class Series(MediaItem):
 class Episode(BaseModel):
     """Single episode."""
 
+    model_config = ConfigDict(
+        populate_by_name=True,
+        alias_generator=lambda s: ''.join(word.capitalize() for word in s.split('_'))
+    )
+
     id: str
     series_id: str
     season_number: int
     episode_number: int
     name: str
     overview: Optional[str] = None
-    air_date: Optional[str] = None  # ISO date
+    air_date: Optional[str] = None  # ISO date, API sends "AirDate"
     run_time_ticks: Optional[int] = None
 
     @property
