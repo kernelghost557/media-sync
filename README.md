@@ -1,73 +1,69 @@
 # 🎬 media-sync
 
-> **Synchronize your media universe.** Connect Jellyfin, Sonarr, Radarr, and Obsidian into one seamless workflow.
+**Synchronize your media universe.** Connect Jellyfin, Sonarr, Radarr, and Obsidian into one seamless workflow.
 
-[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue?logo=python)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![CI](https://github.com/KernelGhost/media-sync/actions/workflows/ci.yml/badge.svg)](https://github.com/KernelGhost/media-sync/actions)
 [![codecov](https://codecov.io/gh/KernelGhost/media-sync/branch/main/graph/badge.svg)](https://codecov.io/gh/KernelGhost/media-sync)
-[![PyPI version](https://badge.fury.io/py/media-sync.svg)](https://badge.fury.io/py/media-sync)
+[![GitHub stars](https://img.shields.io/github/stars/KernelGhost/media-sync?style=social)](https://github.com/KernelGhost/media-sync)
 
 ---
 
 ## 🤖 What is this?
 
-`media-sync` is a **command-line powerhouse** that automatically synchronizes metadata between your media servers and your knowledge base. No more manual copying. No more lost ratings. Everything talks to everything.
+`media-sync` — CLI-инструмент для автоматической синхронизации метаданных между медиа-серверами и Obsidian. Никакого копирования вручную. Никаких потерянных рейтингов. Всё работает само.
 
-### Perfect for:
-- **Home lab enthusiasts** running Jellyfin + Sonarr/Radarr stacks
-- **Obsidian users** who want automatic notes for every movie/series they watch
-- **Power users** who hate duplicate work across apps
-- ** anyone** who wants their media ecosystem to *just work*
+### Идеально подходит:
+- **Домашние лабы** с Jellyfin + Sonarr/Radarr
+- **Obsidian-энтузиасты**, которые хотят автоматические заметки на каждый фильм/сериал
+- **Продвинутые пользователи**, уставшие от дублирования данных между приложениями
+- **Любители порядка**, которые хотят, чтобы медиа-экосистема "просто работала"
 
 ---
 
-## ⚡ Features
+## ⚡ Features at a glance
 
-| ✅ | Feature | Why it matters |
-|----|---------|----------------|
-| 🎯 | **Bi-directional sync** | Rate a movie in Jellyfin → appears in Obsidian. Edit a note in Obsidian → updates Jellyfin (experimental). |
-| 🔄 | **Real-time watching status** | "Watched" in Jellyfin = automatically marked in Obsidian with timestamp. |
-| 🏷️ | **Tag propagation** | Tags from Sonarr/Radarr flow to Obsidian frontmatter. Filter and query like a boss. |
-| 📊 | **Rich console output** | Beautiful progress bars, colored logs, and clear error messages (powered by `rich`). |
-| 🧩 | **Multiple profiles** | Separate configs for "home", "office", "vpn" — switch with one flag. |
-| ⚙️ | **Flexible config** | YAML file, environment variables, or `.env` — your choice. |
-| 🧪 | **Tested & reliable** | 80%+ coverage, CI pipeline, pre-commit hooks. |
-| 🚀 | **Fast & lightweight** | Pure Python, async-ready, minimal dependencies. |
+| ✅ | Feature | Benefit |
+|----|---------|---------|
+| 🔄 | Bi-directional sync (Jellyfin ↔ Obsidian) | Рейтинги и статусы синхронизируются в обе стороны |
+| 📺 | Real-time watching status | "Просмотрено" → автоматически отмечается в Obsidian с временем |
+| 🏷️ | Tags propagation from Sonarr/Radarr | Теги и жанры попадают во frontmatter Obsidian |
+| 🖼️ | Auto-generated notes with covers | Заметки содержат постеры, ссылки, метаданные |
+| ⚙️ | Flexible configuration (YAML + env + .env) | Любой способ хранения конфига |
+| 🧪 | 80%+ test coverage, CI, pre-commit | Надёжно и поддерживаемо |
+| 🎨 | Rich console output (progress bars, colors) | Приятно смотреть при работе |
+| 🚀 | Fast, async-ready, minimal deps | Не грузит систему |
 
 ---
 
 ## 🚀 Installation
 
-### Via pip (recommended)
 ```bash
-pipx install media-sync   # isolated, no clutter
-# or
+# Recommended (isolated)
+pipx install media-sync
+
+# Or regular pip
 pip install media-sync
-```
 
-### Via Poetry (for development)
-```bash
-poetry add media-sync
-```
-
-### From source
-```bash
+# From source (development)
 git clone https://github.com/KernelGhost/media-sync.git
 cd media-sync
 poetry install
 poetry run media-sync --help
 ```
 
+**Требования:** Python 3.11+, Docker (если работаешь с контейнерами), запущенные Jellyfin/Sonarr/Radarr (по необходимости).
+
 ---
 
-## 📖 Quick Start
+## 📖 Quick Start (5 минут)
 
-### 1️⃣ Initialize configuration
+### 1. Инициализируй конфиг
 ```bash
 media-sync config init
 ```
-Creates `~/.config/media-sync/config.yaml`. Example:
+Создаст `~/.config/media-sync/config.yaml`. Пример:
 
 ```yaml
 jellyfin:
@@ -76,7 +72,7 @@ jellyfin:
 
 obsidian:
   vault_path: "/home/user/Documents/obsidian-vault"
-  template: "templates/media_note.md"   # Jinja2 template
+  template: "templates/media_note.md"   # Jinja2 template (опционально)
 
 sonarr:
   url: "http://localhost:8989"
@@ -85,74 +81,75 @@ sonarr:
 radarr:
   url: "http://localhost:7878"
   api_key: "YOUR_RADARR_API_KEY"
+
+sync:
+  dry_run: false
+  batch_size: 50
 ```
 
-### 2️⃣ Test connection
+Как получить API-ключи:
+- **Jellyfin:** Admin → Dashboard → API Keys
+- **Sonarr/Radarr:** Settings → General → Security
+
+### 2. Проверь соединения
 ```bash
 media-sync healthcheck
 ```
-Output:
+Пример:
 ```
-[green]✓[/green] Jellyfin: OK (API v10.8)
-[green]✓[/green] Obsidian: Vault found, template OK
-[yellow]⚠[/yellow] Sonarr: not configured (skipped)
+✓ Jellyfin       http://localhost:8096  (v10.8)
+✓ Obsidian       vault found, template OK
+⚠ Sonarr         not configured (skipped)
+✓ Radarr         http://localhost:7878  (v3)
 ```
 
-### 3️⃣ Run your first sync
+### 3. Запусти синхронизацию
 ```bash
-# One-way: Jellyfin → Obsidian
+# Только Jellyfin → Obsidian (рекомендуется для старта)
 media-sync sync jellyfin-to-obsidian
 
-# Preview without writing files
+# С dry-run, чтобы посмотреть, что будет сделано
 media-sync sync --dry-run
-```
 
-**What you'll see:**
-```
-╭─ Synchronization started ─╮
-│ Mode: jellyfin-to-obsidian │
-├────────────────────────────┤
-│ ✓ Connected to Jellyfin    │
-│ ✓ Fetched 124 media items  │
-│ ✓ Synced 118 notes         │
-│ ⚠ 6 skipped (missing)      │
-╰────────────────────────────╯
+# Полная двусторонняя синхронизация
+media-sync sync full
 ```
 
 ---
 
 ## 🎯 Use Cases
 
-### 📺 You just watched a movie in Jellyfin
-→ `media-sync` creates an Obsidian note with:
-- Title, year, rating, genres
-- Your watch timestamp
-- Direct link to play via Jellyfin
-- Ready for your thoughts/review
+### 📺 Ты только что посмотрел фильм в Jellyfin
+→ `media-sync` создаст заметку в Obsidian с:
+- Названием, годом, жанрами, ролингом
+- Временем просмотра
+- Ссылкой на воспроизведение в Jellyfin
+- Шаблоном для твоих мыслей/обзора
 
-### 📺 Your Plex/Jellyfin library is huge, but your Obsidian vault is empty
-→ Run `media-sync sync jellyfin-to-obsidian` once. All metadata imported. Organize with Dataview queries.
+### 📺 Твоя Plex/Jellyfin библиотека огромна, а Obsidian пуст
+→ `media-sync sync jellyfin-to-obsidian` один раз — импортирует всё. Дальше organise с помощью Dataview.
 
-### 📺 You adjust ratings in Sonarr
-→ Changes propagate to Obsidian frontmatter → your dashboards update automatically.
+### 📺 Ты изменил рейтинг в Sonarr
+→ Изменеие попадает в frontmatter Obsidian → твои дашборды обновляются автоматически.
 
 ---
 
-## 🔧 Commands
+## 🔧 Commands Overview
 
-| Command | Description |
-|---------|-------------|
-| `media-sync config init` | Create default config file |
-| `media-sync healthcheck` | Test all connections |
-| `media-sync sync <mode>` | Run synchronization (`jellyfin-to-obsidian`, `obsidian-to-jellyfin`, `full`) |
-| `media-sync version` | Show version |
-| `media-sync --help` | Full help |
+| Command | Description | Example |
+|---------|-------------|---------|
+| `config init` | Create default config file | `media-sync config init` |
+| `healthcheck` | Test all connections | `media-sync healthcheck` |
+| `sync <mode>` | Run sync (`jellyfin-to-obsidian`, `obsidian-to-jellyfin`, `full`) | `media-sync sync jellyfin-to-obsidian` |
+| `version` | Show version | `media-sync version` |
+| `--help` | Full help | `media-sync --help` |
 
 ---
 
 ## 📁 Obsidian Template Example
 
-`templates/media_note.md`:
+Файл `templates/media_note.md` (Jinja2):
+
 ```markdown
 ---
 aliases: [{{ title }}]
@@ -162,55 +159,26 @@ genres: {{ genres | join(', ') }}
 
 jellyfin_id: {{ jellyfin_id }}
 sonarr_id: {{ sonarr_id }}
-radarr_id: {{ radarr_id }}
+radarr_id: {{ radarr_id %}
 ---
 
 # {{ title }} ({{ year }})
 
+![[{{ poster_path | basename }}]]
+
 ## 📺 Quick Links
 - [Play in Jellyfin](http://localhost:8096/web/index.html#!/item?id={{ jellyfin_id }})
-- [View in Sonarr](http://localhost:8989/series/{{ sonarr_id }})
-- [View in Radarr](http://localhost:7878/movie/{{ radarr_id }})
+{% if sonarr_id %}- [View in Sonarr](http://localhost:8989/series/{{ sonarr_id }}){% endif %}
+{% if radarr_id %}- [View in Radarr](http://localhost:7878/movie/{{ radarr_id }}){% endif %}
 
 ## 🎬 My Review
 _Add your thoughts here..._
+
 ```
 
----
-
-## 🛠️ Development
-
-```bash
-# Clone and setup
-git clone https://github.com/KernelGhost/media-sync.git
-cd media-sync
-poetry install
-
-# Run tests
-poetry run pytest --cov
-
-# Lint
-poetry run ruff check src tests
-
-# Pre-commit hooks
-pre-commit install
-```
-
----
-
-## 📈 Roadmap
-
-- [x] v0.1.0: Project scaffolding, CLI, CI
-- [x] v0.2.0: Jellyfin client + Obsidian note generation + one-way sync
-- [ ] v0.3.0: Sonarr integration (series from Sonarr)
-- [ ] v0.4.0: Radarr integration (movies from Radarr)
-- [ ] v0.5.0: Bi-directional sync (Obsidian → Jellyfin)
-- [ ] v0.6.0: Multiple profiles, advanced filtering
-- [ ] v1.0.0: Stable release with full feature parity
-
----
-
-## 🤝 Contributing
+**Примечания:**
+- `poster_path` автоматическиownloads into your vault's `attachments/` and embeds as Obsidian image.
+- Используй `Dataview` для динамических dashboards.
 
 ---
 
@@ -219,56 +187,63 @@ pre-commit install
 ```
 media-sync/
 ├── src/media_sync/
-│   ├── cli.py              # Click commands
-│   ├── config.py           # Pydantic config models
-│   ├── models/             # Data models (Movie, Series, Episode)
-│   ├── client/             # API clients (Jellyfin base)
-│   └── sync/               # Core sync engine (coming soon)
-├── tests/                  # Unit & integration tests
+│   ├── cli.py              # Click commands (entrypoint)
+│   ├── config.py           # Pydantic settings models
+│   ├── models/             # Data models (Movie, Series, Episode, Note)
+│   ├── client/             # API clients (Jellyfin, Sonarr, Radarr, Obsidian Vault)
+│   ├── sync/               # Core sync engine (direction: one-way / bi-dir)
+│   └── utils/              # Helpers (jinja, file ops, logging)
+├── tests/                  # Unit + integration tests
 ├── .github/workflows/ci.yml
 ├── pyproject.toml
-└── README.md
+├── README.md
+└── CHANGELOG.md
 ```
 
 ---
 
 ## 📈 Roadmap
 
-- [x] v0.1.0: Project scaffolding, CLI, CI
-- [ ] v0.2.0: Jellyfin client (movies, series, episodes)
-- [ ] v0.3.0: Obsidian note generation with templates
-- [ ] v0.4.0: Bi-directional sync (Obsidian → Jellyfin)
-- [ ] v0.5.0: Sonarr/Radarr integration
-- [ ] v0.6.0: Multiple profiles, advanced filtering
-- [ ] v1.0.0: Stable release with full feature parity
+| Version | Target | Status |
+|---------|--------|--------|
+| v0.1.0 | Project scaffolding, CLI, CI | ✅ Done |
+| v0.2.0 | Jellyfin client (movies, series, episodes) | ✅ Done |
+| v0.3.0 | Obsidian note generation + one-way sync | ✅ Done |
+| v0.4.0 | Sonarr integration (series metadata) | 🚧 In progress |
+| v0.5.0 | Radarr integration (movies metadata) | 📅 Planned |
+| v0.6.0 | Bi-directional sync (Obsidian → Jellyfin) | 📅 Planned |
+| v0.7.0 | Multiple profiles, advanced filtering | 📅 Planned |
+| v1.0.0 | Stable release with full feature parity | 🎯 Goal |
+
+---
+
+## 🧪 Testing
+
+```bash
+poetry run pytest --cov
+poetry run pytest --cov-report=html  # open htmlcov/index.html
+```
+
+Pre-commit hooks (install once):
+```bash
+pre-commit install
+```
+
+CI runs on every push (GitHub Actions). codecov integration enabled.
 
 ---
 
 ## 🤝 Contributing
 
-This is an autonomous AI-driven project, but human collaboration is welcome!
+This is an autonomous AI-driven project, but humans are welcome!
 
-1. Fork the repo
-2. Create a feature branch (`git checkout -b feat/amazing-feature`)
-3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
-4. Push to the branch (`gh repo push origin feat/amazing-feature`)
-5. Open a Pull Request
+1. **Fork** the repo
+2. **Create** a feature branch: `git checkout -b feat/your-feature`
+3. **Commit**: `git commit -m 'feat: add amazing feature'`
+4. **Push**: `gh repo push origin feat/your-feature`
+5. **Open PR** — ensure tests pass and linting is clean.
 
-Please ensure tests pass and linting is clean before submitting.
-
----
-
-## 📜 License
-
-MIT © 2025–present [KernelGhost](https://github.com/KernelGhost)
-
----
-
-## 🙋 Support
-
-- **Issues:** https://github.com/KernelGhost/media-sync/issues
-- **Discussions:** https://github.com/KernelGhost/media-sync/discussions
-- **Changelog:** [CHANGELOG.md](CHANGELOG.md)
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) (coming soon) for coding conventions.
 
 ---
 
@@ -286,4 +261,4 @@ MIT © 2025–present [KernelGhost](https://github.com/KernelGhost)
 
 ---
 
-*Built with ❤️ for the self-hosted media community. If this tool saves you time, consider starring the repo ⭐*
+*Built for the self-hosted media community. If this saves you time, star the repo ⭐*
