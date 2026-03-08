@@ -18,7 +18,7 @@ def test_generate_movie_note(tmp_path: Path):
         name="Test Movie",
         original_title="Original Title",
         year=2024,
-        genre=["Action", "Sci-Fi"],
+        genres=["Action", "Sci-Fi"],
         community_rating=8.5,
         official_rating="PG-13",
     )
@@ -40,7 +40,7 @@ def test_generate_series_note(tmp_path: Path):
         id="series123",
         name="Test Series",
         year=2023,
-        genre=["Drama"],
+        genres=["Drama"],
         season_count=3,
         episode_count=30,
         status="Continuing",
