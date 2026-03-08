@@ -3,12 +3,12 @@
 import logging
 from pathlib import Path
 
-from .config_loader import ConfigLoader
-from .client.jellyfin import JellyfinClient
-from .client.sonarr import SonarrClient
-from .client.radarr import RadarrClient
-from .obsidian import ObsidianGenerator
-from .models.media import Movie, Series
+from ..config_loader import ConfigLoader
+from ..client.jellyfin import JellyfinClient
+from ..client.sonarr import SonarrClient
+from ..client.radarr import RadarrClient
+from ..obsidian import ObsidianGenerator
+from ..models.media import Movie, Series
 # We'll adapt Sonarr/Radarr models to our internal ones
 
 logger = logging.getLogger(__name__)
