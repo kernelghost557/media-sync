@@ -103,9 +103,8 @@ Output:
 # One-way: Jellyfin → Obsidian
 media-sync sync jellyfin-to-obsidian
 
-# Full bidirectional (experimental)
-media-sync sync full --dry-run   # preview changes
-media-sync sync full             # apply
+# Preview without writing files
+media-sync sync --dry-run
 ```
 
 **What you'll see:**
@@ -196,6 +195,22 @@ poetry run ruff check src tests
 # Pre-commit hooks
 pre-commit install
 ```
+
+---
+
+## 📈 Roadmap
+
+- [x] v0.1.0: Project scaffolding, CLI, CI
+- [x] v0.2.0: Jellyfin client + Obsidian note generation + one-way sync
+- [ ] v0.3.0: Sonarr integration (series from Sonarr)
+- [ ] v0.4.0: Radarr integration (movies from Radarr)
+- [ ] v0.5.0: Bi-directional sync (Obsidian → Jellyfin)
+- [ ] v0.6.0: Multiple profiles, advanced filtering
+- [ ] v1.0.0: Stable release with full feature parity
+
+---
+
+## 🤝 Contributing
 
 ---
 

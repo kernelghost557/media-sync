@@ -25,14 +25,50 @@ def healthcheck():
 
 
 @main.command()
-@click.option("--dry-run", is_flag=True, help="Show what would be changed")
-def sync(dry_run: bool):
-    """Run synchronization."""
-    console.print(f"[cyan]Starting sync... (dry-run: {dry_run})[/cyan]")
-    console.print("[green]✓ Configuration loaded[/green]")
-    console.print("[green]✓ Connected to services[/green]")
-    console.print("[yellow]⚠ Sync logic pending implementation[/yellow]")
-    console.print("[bold green]Done.[/bold green]")
+@click.option("--dry-run", is_flag=True, help="Show what would be changed without writing files")
+@click.option("--source", type=click.Choice(["jellyfin", "sonarr", "radarr", "all"]), default="all", help="Which source to sync")
+def sync(dry_run: bool, source: str):
+    """Synchronize media libraries to Obsidian vault."""
+    try:
+        from media_sync.config_loader import ConfigLoader
+        from media_sync.sync import SyncEngine
+
+        console.print("[cyan]Loading configuration...[/cyan]")
+        loader = ConfigLoader()
+        engine = SyncEngine(loader)
+
+        console.print(f"[cyan]Starting synchronization from {source}...[/cyan]")
+        if dry_run:
+            console.print("[yellow]DRY RUN mode - no files will be written[/yellow]")
+
+        with console.status("[bold green]Processing media items..."):
+            if source == "jellyfin":
+                stats = engine.sync_jellyfin(dry_run=dry_run)
+            elif source == "sonarr":
+                stats = engine.sync_sonarr(dry_run=dry_run)
+            elif source == "radarr":
+                stats = engine.sync_radarr(dry_run=dry_run)
+            else:  # all
+                stats = engine.sync_all(dry_run=dry_run)
+
+        console.print("[bold green]✓ Sync completed[/bold green]")
+        if source == "all":
+            for src_name, src_stats in stats.items():
+                if src_stats:
+                    console.print(f"[cyan]{src_name.capitalize()}[/cyan]: Movies {src_stats.get('movies',0)}, Series {src_stats.get('series',0)}")
+                    console.print(f" Created: {src_stats.get('created',0)}, Skipped: {src_stats.get('skipped',0)}, Errors: {src_stats.get('errors',0)}")
+        else:
+            console.print(f"Movies: {stats.get('movies',0)}, Series: {stats.get('series',0)}")
+            console.print(f"Created: {stats.get('created',0)}, Skipped: {stats.get('skipped',0)}, Errors: {stats.get('errors',0)}")
+        if dry_run:
+            console.print("[yellow]This was a dry run. No files were modified.[/yellow]")
+    except ValueError as e:
+        console.print(f"[red]Configuration error:[/red] {e}")
+        console.print("Please run [cyan]media-sync config-init[/cyan] and edit the config file.")
+        raise click.Abort()
+    except Exception as e:
+        console.print(f"[red]Unexpected error:[/red] {e}")
+        raise click.Abort()
 
 
 @main.command()

@@ -50,5 +50,9 @@ class MediaSyncConfig(BaseModel):
     @classmethod
     def from_yaml(cls, data: dict) -> "MediaSyncConfig":
         """Create config from YAML dictionary."""
-        # Will be implemented when we load YAML
-        raise NotImplementedError
+        jellyfin_data = data.get("jellyfin")
+        obsidian_data = data.get("obsidian")
+        return cls(
+            jellyfin=JellyfinConfig(**jellyfin_data) if jellyfin_data else None,
+            obsidian=ObsidianConfig(**obsidian_data) if obsidian_data else None,
+        )
