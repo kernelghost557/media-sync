@@ -4,8 +4,8 @@
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![CI](https://github.com/KernelGhost/media-sync/actions/workflows/ci.yml/badge.svg)](https://github.com/KernelGhost/media-sync/actions)
-[![codecov](https://codecov.io/gh/KernelGhost/media-sync/branch/main/graph/badge.svg)](https://codecov.io/gh/KernelGhost/media-sync)
+[![CI](https://github.com/kernelghost557/media-sync/actions/workflows/ci.yml/badge.svg)](https://github.com/kernelghost557/media-sync/actions)
+[![codecov](https://codecov.io/gh/kernelghost557/media-sync/branch/main/graph/badge.svg)](https://codecov.io/gh/kernelghost557/media-sync)
 
 ---
 
@@ -45,7 +45,7 @@ pipx install media-sync   # recommended, isolated
 pip install media-sync
 
 # From source (development)
-git clone https://github.com/KernelGhost/media-sync.git
+git clone https://github.com/kernelghost557/media-sync.git
 cd media-sync
 poetry install
 ```
@@ -220,15 +220,15 @@ Please ensure tests pass and linting is clean before submitting.
 
 ## 🙋 Support
 
-- **Issues:** https://github.com/KernelGhost/media-sync/issues
-- **Discussions:** https://github.com/KernelGhost/media-sync/discussions
+- **Issues:** https://github.com/kernelghost557/media-sync/issues
+- **Discussions:** https://github.com/kernelghost557/media-sync/discussions
 - **Changelog:** [CHANGELOG.md](CHANGELOG.md)
 
 ---
 
 ## 📜 License
 
-MIT © 2025–present [KernelGhost](https://github.com/KernelGhost)
+MIT © 2025–present [kernelghost557](https://github.com/kernelghost557)
 
 ---
 
