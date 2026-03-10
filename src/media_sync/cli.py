@@ -19,9 +19,79 @@ def main():
 @main.command()
 def healthcheck():
     """Test connectivity to all configured services."""
-    console.print("[yellow]Healthcheck not implemented yet[/yellow]")
-    console.print("This will test Jellyfin, Sonarr, Radarr, and Obsidian connections.")
-    sys.exit(0)
+    from media_sync.config_loader import ConfigLoader
+
+    loader = ConfigLoader()
+    try:
+        config = loader.load()
+    except Exception as e:
+        console.print(f"[red]Failed to load config: {e}[/red]")
+        sys.exit(1)
+
+    all_ok = True
+
+    # Jellyfin
+    if config.jellyfin:
+        try:
+            from media_sync.client.jellyfin import JellyfinClient
+            client = JellyfinClient(
+                base_url=config.jellyfin.url,
+                api_key=config.jellyfin.api_key,
+                user_id=config.jellyfin.username,
+            )
+            info = client.healthcheck()
+            console.print(f"[green]✓[/green] Jellyfin: OK (v{info.get('version')}, {info.get('server_name')})")
+        except Exception as e:
+            console.print(f"[red]✗[/red] Jellyfin: {e}")
+            all_ok = False
+    else:
+        console.print("[yellow]⚠[/yellow] Jellyfin: not configured (skipped)")
+
+    # Sonarr
+    if config.sonarr:
+        try:
+            from media_sync.client.sonarr import SonarrClient
+            client = SonarrClient(base_url=config.sonarr.url, api_key=config.sonarr.api_key)
+            info = client.healthcheck()
+            console.print(f"[green]✓[/green] Sonarr: OK (v{info.get('version')}, {info.get('os')})")
+        except Exception as e:
+            console.print(f"[red]✗[/red] Sonarr: {e}")
+            all_ok = False
+    else:
+        console.print("[yellow]⚠[/yellow] Sonarr: not configured (skipped)")
+
+    # Radarr
+    if config.radarr:
+        try:
+            from media_sync.client.radarr import RadarrClient
+            client = RadarrClient(base_url=config.radarr.url, api_key=config.radarr.api_key)
+            info = client.healthcheck()
+            console.print(f"[green]✓[/green] Radarr: OK (v{info.get('version')}, {info.get('os')})")
+        except Exception as e:
+            console.print(f"[red]✗[/red] Radarr: {e}")
+            all_ok = False
+    else:
+        console.print("[yellow]⚠[/yellow] Radarr: not configured (skipped)")
+
+    # Obsidian
+    if config.obsidian:
+        vault = config.obsidian.vault_path
+        if vault.exists() and vault.is_dir():
+            console.print(f"[green]✓[/green] Obsidian: Vault found at {vault}")
+            if config.obsidian.template:
+                if config.obsidian.template.exists():
+                    console.print(f"[green]✓[/green] Template: {config.obsidian.template}")
+                else:
+                    console.print(f"[red]✗[/red] Template not found: {config.obsidian.template}")
+                    all_ok = False
+        else:
+            console.print(f"[red]✗[/red] Obsidian: Vault not found at {vault}")
+            all_ok = False
+    else:
+        console.print("[yellow]⚠[/yellow] Obsidian: not configured (skipped)")
+
+    if not all_ok:
+        sys.exit(1)
 
 
 @main.command()

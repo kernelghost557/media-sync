@@ -26,14 +26,14 @@
 
 | ✅ | Feature | Why it matters |
 |----|---------|----------------|
-| 🎯 | **Bi-directional sync** | Rate a movie in Jellyfin → appears in Obsidian. Edit a note in Obsidian → updates Jellyfin (experimental). |
-| 🔄 | **Real-time watching status** | "Watched" in Jellyfin = automatically marked in Obsidian with timestamp. |
-| 🏷️ | **Tag propagation** | Tags from Sonarr/Radarr flow to Obsidian frontmatter. Filter and query like a boss. |
+| 🎯 | **One-way sync (Jellyfin → Obsidian)** | Export your media library from Jellyfin into Obsidian notes with metadata. |
+| 🏷️ | **Frontmatter generation** | Aliases, rating, genres, and external IDs for flexible querying in Obsidian. |
+| 🔗 | **Quick links** | Direct links to play in Jellyfin (and optionally Sonarr/Radarr). |
 | 📊 | **Rich console output** | Beautiful progress bars, colored logs, and clear error messages (powered by `rich`). |
-| 🧩 | **Multiple profiles** | Separate configs for "home", "office", "vpn" — switch with one flag. |
 | ⚙️ | **Flexible config** | YAML file, environment variables, or `.env` — your choice. |
-| 🧪 | **Tested & reliable** | 80%+ coverage, CI pipeline, pre-commit hooks. |
-| 🚀 | **Fast & lightweight** | Pure Python, async-ready, minimal dependencies. |
+| 🧪 | **Tested & reliable** | Unit tests, CI pipeline, pre-commit hooks. |
+| 🚀 | **Fast & lightweight** | Pure Python, minimal dependencies, async-ready. |
+| 🩺 **Healthcheck** | Verify connectivity to all configured services before syncing. |
 
 ---
 
@@ -101,10 +101,13 @@ Output:
 ### 3️⃣ Run your first sync
 ```bash
 # One-way: Jellyfin → Obsidian
-media-sync sync jellyfin-to-obsidian
+media-sync sync --source jellyfin
 
 # Preview without writing files
-media-sync sync --dry-run
+media-sync sync --source jellyfin --dry-run
+
+# Sync all configured sources (Jellyfin + Sonarr + Radarr)
+media-sync sync --source all
 ```
 
 **What you'll see:**
@@ -144,7 +147,7 @@ media-sync sync --dry-run
 |---------|-------------|
 | `media-sync config init` | Create default config file |
 | `media-sync healthcheck` | Test all connections |
-| `media-sync sync <mode>` | Run synchronization (`jellyfin-to-obsidian`, `obsidian-to-jellyfin`, `full`) |
+| `media-sync sync --source <source>` | Run synchronization (`--source jellyfin`, `--source sonarr`, `--source radarr`, `--source all`) |
 | `media-sync version` | Show version |
 | `media-sync --help` | Full help |
 
@@ -210,10 +213,6 @@ pre-commit install
 
 ---
 
-## 🤝 Contributing
-
----
-
 ## 🏗️ Architecture
 
 ```
@@ -221,12 +220,17 @@ media-sync/
 ├── src/media_sync/
 │   ├── cli.py              # Click commands
 │   ├── config.py           # Pydantic config models
+│   ├── config_loader.py    # Configuration loader with env overrides
 │   ├── models/             # Data models (Movie, Series, Episode)
-│   ├── client/             # API clients (Jellyfin base)
-│   └── sync/               # Core sync engine (coming soon)
+│   ├── client/             # API clients (Jellyfin, Sonarr, Radarr)
+│   └── sync.py             # Synchronization engine (Jellyfin → Obsidian)
 ├── tests/                  # Unit & integration tests
+├── templates/
+│   └── media_note.md       # Default Obsidian template
 ├── .github/workflows/ci.yml
+├── .pre-commit-config.yaml
 ├── pyproject.toml
+├── CHANGELOG.md
 └── README.md
 ```
 
