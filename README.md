@@ -32,6 +32,7 @@
 | ⚙️ | **Flexible config** via YAML, environment variables, or `.env` |
 | 🧪 | **Tested & reliable** with CI, coverage, and pre-commit hooks |
 | 🚀 | **Fast & lightweight** pure Python, minimal dependencies |
+| 📈 | **Reddit Warmup** — daily automated collection and trend analysis from r/selfhosted, r/python, r/homelab (via internal agent) |
 
 *Note: Sonarr/Radarr integration and bi-directional sync are planned for future releases.*
 

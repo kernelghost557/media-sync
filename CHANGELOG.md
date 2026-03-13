@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Basic Obsidian note generation from Jellyfin movies and series
 - Healthcheck command implementation
 - Additional tests for SyncEngine
+- Reddit Warmup integration: daily collection of fresh posts from r/selfhosted, r/python, r/homelab with trend analysis stored in MEMORY.md
 
 ### Changed
 - Updated README with development instructions, project structure, and badges
