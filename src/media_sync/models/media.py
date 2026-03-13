@@ -3,25 +3,29 @@
 from datetime import datetime
 from typing import Optional
 
+from pydantic import BaseModel, ConfigDict, Field
+
 
 class MediaItem(BaseModel):
     """Base model for any media item."""
 
-    id: str
-    name: str
-    original_title: Optional[str] = None
-    year: Optional[int] = None
-    overview: Optional[str] = None
-    genre: list[str] = []
-    community_rating: Optional[float] = None
-    official_rating: Optional[str] = None
-    run_time_ticks: Optional[int] = None  # ticks (100ns per tick)
-    production_year: Optional[int] = None
-    premier_date: Optional[str] = None  # ISO date string
-    path: Optional[str] = None
-    has_icon: bool = False
-    has_backdrop: bool = False
-    tag：list[str] = []  # user tags
+    model_config = ConfigDict(populate_by_name=True)
+
+    id: str = Field(..., alias="Id")
+    name: str = Field(..., alias="Name")
+    original_title: Optional[str] = Field(None, alias="OriginalTitle")
+    year: Optional[int] = Field(None, alias="Year")
+    overview: Optional[str] = Field(None, alias="Overview")
+    genre: list[str] = Field(default_factory=list, alias="Genres")
+    community_rating: Optional[float] = Field(None, alias="CommunityRating")
+    official_rating: Optional[str] = Field(None, alias="OfficialRating")
+    run_time_ticks: Optional[int] = Field(None, alias="RunTimeTicks")
+    production_year: Optional[int] = Field(None, alias="ProductionYear")
+    premier_date: Optional[str] = Field(None, alias="PremiereDate")
+    path: Optional[str] = Field(None, alias="Path")
+    has_icon: bool = Field(False, alias="HasIcon")
+    has_backdrop: bool = Field(False, alias="HasBackdrop")
+    tag: list[str] = Field(default_factory=list, alias="Tags")
 
     @property
     def duration_minutes(self) -> Optional[int]:

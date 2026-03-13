@@ -99,9 +99,7 @@ class SyncEngine:
                 template_path = config.obsidian.template.expanduser().resolve()
                 if template_path.exists():
                     self.template_str = template_path.read_text()
-            if not self.template_str:
-                # Fallback to built-in template
-                self.template_str = DEFAULT_MOVIE_TEMPLATE  # will choose per type later
+            # Note: if template_str is still None, _get_template will use built-in defaults
 
         logger.info("SyncEngine initialized")
 
@@ -145,7 +143,7 @@ class SyncEngine:
             "year": year,
             "rating": movie.community_rating or "",
             "watched_date": watched_date,
-            "genres": movie.genres or [],
+            "genres": movie.genre or [],
             "jellyfin_id": movie.id,
             "jellyfin_url": self.config.jellyfin.url if self.config.jellyfin else "",
             "sonarr_id": None,
@@ -163,7 +161,7 @@ class SyncEngine:
             "title": series.name,
             "year": year,
             "rating": series.community_rating or "",
-            "genres": series.genres or [],
+            "genres": series.genre or [],
             "status": series.status or "",
             "season_count": series.season_count or 0,
             "episode_count": series.episode_count or 0,
@@ -228,13 +226,130 @@ class SyncEngine:
 
     def sync_sonarr(self, dry_run: bool = False) -> Dict[str, int]:
         """Sync series from Sonarr to Obsidian."""
-        # Placeholder: will fetch series and create notes, possibly richer with episodes
-        raise NotImplementedError("Sonarr sync not implemented yet")
+        if not self.sonarr_client:
+            raise ValueError("Sonarr client not configured")
+        if not self.vault_path:
+            raise ValueError("Obsidian vault not configured")
+
+        stats = {"series": 0, "created": 0, "skipped": 0, "errors": 0}
+        try:
+            series_list = self.sonarr_client.get_series()
+            stats["series"] = len(series_list)
+            for series in series_list:
+                try:
+                    # Sonarr series dict fields: id, title, seriesYear, status, seasonCount, genres, ratings
+                    series_id = series.get("id")
+                    title = series.get("title", "Unknown")
+                    year = series.get("seriesYear") or series.get("year") or ""
+                    status = series.get("status", "")
+                    season_count = series.get("seasonCount", 0)
+                    # genres might be list of strings or list of objects
+                    genres_raw = series.get("genres", [])
+                    genres = [g if isinstance(g, str) else g.get("name", "") for g in genres_raw if g]
+                    # rating from community rating or user rating
+                    rating = None
+                    ratings = series.get("ratings", {})
+                    if ratings:
+                        # Jellyfin-style: ratings might have "CommunityRating" or "VoteCount"
+                        rating = ratings.get("CommunityRating") or ratings.get("value")
+                        if rating:
+                            rating = float(rating)
+
+                    # Render note
+                    template = self._get_template("series")
+                    context = {
+                        "title": title,
+                        "year": year,
+                        "rating": rating or "",
+                        "genres": genres,
+                        "status": status,
+                        "season_count": season_count,
+                        "episode_count": 0,  # we could sum episodes but O(n) extra call
+                        "jellyfin_id": None,
+                        "jellyfin_url": "",
+                        "sonarr_id": series_id,
+                        "sonarr_url": self.config.sonarr.url if self.config.sonarr else "",
+                    }
+                    content = template.render(**context)
+
+                    # Write file
+                    safe_title = "".join(c for c in title if c.isalnum() or c in " -_").strip()
+                    filename = f"{safe_title} ({year or 'Unknown'}).md"
+                    path = self.vault_path / "Series" / filename
+                    if self._write_note(path, content, dry_run):
+                        stats["created"] += 1
+                    else:
+                        stats["skipped"] += 1
+                except Exception as e:
+                    logger.error(f"Error processing series from Sonarr: {e}")
+                    stats["errors"] += 1
+        except Exception as e:
+            logger.error(f"Failed to fetch series from Sonarr: {e}")
+            stats["errors"] += 1
+
+        return stats
 
     def sync_radarr(self, dry_run: bool = False) -> Dict[str, int]:
         """Sync movies from Radarr to Obsidian."""
-        # Placeholder: similar to Jellyfin but using Radarr client
-        raise NotImplementedError("Radarr sync not implemented yet")
+        if not self.radarr_client:
+            raise ValueError("Radarr client not configured")
+        if not self.vault_path:
+            raise ValueError("Obsidian vault not configured")
+
+        stats = {"movies": 0, "created": 0, "skipped": 0, "errors": 0}
+        try:
+            movies = self.radarr_client.get_movies()
+            stats["movies"] = len(movies)
+            for movie in movies:
+                try:
+                    # Radarr movie dict fields: id, title, year, genres, ratings
+                    movie_id = movie.get("id")
+                    title = movie.get("title", "Unknown")
+                    year = movie.get("year") or movie.get("releaseDate", "")[:4] if movie.get("releaseDate") else ""
+                    # genres might be list of strings
+                    genres_raw = movie.get("genres", [])
+                    genres = [g if isinstance(g, str) else g.get("name", "") for g in genres_raw if g]
+                    # rating
+                    rating = None
+                    ratings = movie.get("ratings", {})
+                    if ratings:
+                        rating = ratings.get("CommunityRating") or ratings.get("value")
+                        if rating:
+                            rating = float(rating)
+
+                    # Render note
+                    template = self._get_template("movie")
+                    context = {
+                        "title": title,
+                        "year": year,
+                        "rating": rating or "",
+                        "watched_date": "",  # Radarr doesn't track watched; can add manually
+                        "genres": genres,
+                        "jellyfin_id": None,
+                        "jellyfin_url": "",
+                        "sonarr_id": None,
+                        "sonarr_url": "",
+                        "radarr_id": movie_id,
+                        "radarr_url": self.config.radarr.url if self.config.radarr else "",
+                    }
+                    content = template.render(**context)
+
+                    # Write file
+                    safe_title = "".join(c for c in title if c.isalnum() or c in " -_").strip()
+                    filename = f"{safe_title} ({year or 'Unknown'}).md"
+                    path = self.vault_path / "Movies" / filename
+                    if self._write_note(path, content, dry_run):
+                        stats["created"] += 1
+                    else:
+                        stats["skipped"] += 1
+                except Exception as e:
+                    logger.error(f"Error processing movie from Radarr: {e}")
+                    stats["errors"] += 1
+        except Exception as e:
+            logger.error(f"Failed to fetch movies from Radarr: {e}")
+            stats["errors"] += 1
+
+        return stats
 
     def sync_all(self, dry_run: bool = False) -> Dict[str, Dict[str, int]]:
         """Run all configured syncs."""

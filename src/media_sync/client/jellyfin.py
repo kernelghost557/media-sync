@@ -1,7 +1,7 @@
 """Jellyfin API client."""
 
 import logging
-from typing import Any
+from typing import Any, Optional
 
 from .base import BaseAPIClient
 from ..models.media import Movie, Series, Episode

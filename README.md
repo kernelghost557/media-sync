@@ -20,21 +20,20 @@
 
 ---
 
-## ⚡ Features (v0.2.0)
+## ✨ Features (v0.3.0+)
 
 | ✅ | Feature |
 |----|---------|
-| 🎯 | **One-way sync: Jellyfin → Obsidian** (movies + series) |
-| 🏷️ | **Frontmatter generation** with aliases, rating, genres, jellyfin_id |
-| 🔗 | **Quick links** to play in Jellyfin directly from Obsidian |
+| 🎯 | **Multi-source sync**: Jellyfin, Sonarr, Radarr (movies + series) |
+| 🔄 | **Bi-directional planned** (future: Obsidian → Jellyfin) |
+| 🏷️ | **Frontmatter generation** with aliases, rating, genres, IDs |
+| 🔗 | **Quick links** to play in Jellyfin / manage in Sonarr/Radarr |
 | 🩺 | **Healthcheck** to verify all service connections |
 | 📊 | **Rich console output** with progress bars and colored logs |
 | ⚙️ | **Flexible config** via YAML, environment variables, or `.env` |
 | 🧪 | **Tested & reliable** with CI, coverage, and pre-commit hooks |
 | 🚀 | **Fast & lightweight** pure Python, minimal dependencies |
 | 📈 | **Reddit Warmup** — daily automated collection and trend analysis from r/selfhosted, r/python, r/homelab (via internal agent) |
-
-*Note: Sonarr/Radarr integration and bi-directional sync are planned for future releases.*
 
 ---
 
@@ -68,18 +67,17 @@ jellyfin:
   url: "http://localhost:8096"
   api_key: "YOUR_JELLYFIN_API_KEY"
 
+sonarr:
+  url: "http://localhost:8989"
+  api_key: "YOUR_SONARR_API_KEY"
+
+radarr:
+  url: "http://localhost:7878"
+  api_key: "YOUR_RADARR_API_KEY"
+
 obsidian:
   vault_path: "/path/to/your/vault"
   template: "templates/media_note.md"   # optional, built-in default exists
-
-# Optional (not yet used in sync):
-# sonarr:
-#   url: "http://localhost:8989"
-#   api_key: "YOUR_SONARR_API_KEY"
-#
-# radarr:
-#   url: "http://localhost:7878"
-#   api_key: "YOUR_RADARR_API_KEY"
 ```
 
 ### 2️⃣ Verify connections
@@ -117,7 +115,9 @@ Notes are created in `Obsidian vault/Movies/` and `Obsidian vault/Series/` with 
 | `media-sync config init` | Create default config file |
 | `media-sync healthcheck` | Test connectivity to configured services |
 | `media-sync sync --source jellyfin` | Sync movies and series from Jellyfin to Obsidian |
-| `media-sync sync --source all` | Sync all configured sources (Sonarr/Radarr pending) |
+| `media-sync sync --source sonarr` | Sync series from Sonarr to Obsidian |
+| `media-sync sync --source radarr` | Sync movies from Radarr to Obsidian |
+| `media-sync sync --source all` | Sync all configured sources |
 | `media-sync --help` | Full help |
 
 ---
@@ -197,8 +197,8 @@ pre-commit install
 
 - [x] v0.1.0 — Project scaffolding, CLI, CI
 - [x] v0.2.0 — Jellyfin client + Obsidian note generation (one-way)
-- [ ] v0.3.0 — Sonarr integration (series metadata)
-- [ ] v0.4.0 — Radarr integration (movies metadata)
+- [x] v0.3.0 — Sonarr integration (series metadata)
+- [x] v0.4.0 — Radarr integration (movies metadata)
 - [ ] v0.5.0 — Bi-directional sync (Obsidian → Jellyfin)
 - [ ] v0.6.0 — Multiple profiles, advanced filtering
 - [ ] v1.0.0 — Stable release

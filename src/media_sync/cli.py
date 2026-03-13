@@ -154,18 +154,17 @@ def config_init():
   url: "http://localhost:8096"
   api_key: "YOUR_JELLYFIN_API_KEY"
 
+sonarr:
+  url: "http://localhost:8989"
+  api_key: "YOUR_SONARR_API_KEY"
+
+radarr:
+  url: "http://localhost:7878"
+  api_key: "YOUR_RADARR_API_KEY"
+
 obsidian:
   vault_path: "/path/to/your/vault"
   template: "templates/media_note.md"
-
-# Uncomment and configure if you use Sonarr/Radarr
-# sonarr:
-#   url: "http://localhost:8989"
-#   api_key: "YOUR_SONARR_API_KEY"
-#
-# radarr:
-#   url: "http://localhost:7878"
-#   api_key: "YOUR_RADARR_API_KEY"
 """
     )
     console.print(f"[green]Created config at {config_path}[/green]")
