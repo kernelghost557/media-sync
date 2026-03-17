@@ -51,13 +51,15 @@ class JellyfinClient(BaseAPIClient):
         items = data.get("Items", [])
         return [Movie(**item) for item in items]
 
-    def get_series(self) -> list[Series]:
+    def get_series(self, include_favorite: bool = False) -> list[Series]:
         """Fetch all TV series."""
         params = {
             "IncludeItemTypes": "Series",
             "Recursive": "true",
             "fields": "DateCreated,CommunityRating,OfficialRating,Path,RunTimeTicks,ProductionYear,Genres,Tags,Taglines,Overview,OriginalTitle,People,SeasonCount,EpisodeCount,Status",
         }
+        if include_favorite:
+            params["IsFavorite"] = "true"
         data = self.get("/Users/{user_id}/Items".format(user_id=self.user_id), params=params)
         items = data.get("Items", [])
         return [Series(**item) for item in items]

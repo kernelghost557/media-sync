@@ -20,7 +20,7 @@
 
 ---
 
-## ✨ Features (v0.3.0+)
+## ✨ Features (v0.4.0+)
 
 | ✅ | Feature |
 |----|---------|
@@ -34,6 +34,8 @@
 | 🧪 | **Tested & reliable** with CI, coverage, and pre-commit hooks |
 | 🚀 | **Fast & lightweight** pure Python, minimal dependencies |
 | 📈 | **Reddit Warmup** — daily automated collection and trend analysis from r/selfhosted, r/python, r/homelab (via internal agent) |
+| 🔁 | **Smart updates**: existing notes updated only when source metadata changes |
+| ⭐ | **Favorites filtering**: sync only marked favorites from Jellyfin |
 
 ---
 
@@ -66,6 +68,7 @@ This creates `~/.config/media-sync/config.yaml`. Example:
 jellyfin:
   url: "http://localhost:8096"
   api_key: "YOUR_JELLYFIN_API_KEY"
+  sync_favorites_only: false   # Optional: only sync favorites (default false)
 
 sonarr:
   url: "http://localhost:8989"
@@ -106,6 +109,10 @@ media-sync sync --source jellyfin
 
 Notes are created in `Obsidian vault/Movies/` and `Obsidian vault/Series/` with metadata and links.
 
+💡 **Tips:**
+- Set `jellyfin.sync_favorites_only: true` to sync only your favorite movies and series.
+- Existing notes are automatically updated when source metadata changes (e.g., updated rating). The sync compares content and rewrites only when necessary, preserving any manual edits outside the generated frontmatter.
+
 ---
 
 ## 🔧 Commands
@@ -135,18 +142,22 @@ rating: {{ rating }}
 watched: {{ watched_date }}
 genres: {{ genres | join(', ') }}
 jellyfin_id: {{ jellyfin_id }}
+{% if sonarr_id %}sonarr_id: {{ sonarr_id }}{% endif %}
+{% if radarr_id %}radarr_id: {{ radarr_id }}{% endif %}
 ---
 
 # {{ title }} ({{ year }})
 
 ## 📺 Quick Links
 - [Play in Jellyfin]({{ jellyfin_url }}/web/index.html#!/item?id={{ jellyfin_id }})
+{% if sonarr_id %}- [View in Sonarr]({{ sonarr_url }}/series/{{ sonarr_id }}){% endif %}
+{% if radarr_id %}- [View in Radarr]({{ radarr_url }}/movie/{{ radarr_id }}){% endif %}
 
 ## 🎬 My Review
 _Add your thoughts here..._
 ```
 
-The template receives context: `title`, `year`, `rating`, `watched_date`, `genres`, `jellyfin_id`, `jellyfin_url`.
+The template receives context: `title`, `year`, `rating`, `watched_date`, `genres`, `jellyfin_id`, `jellyfin_url`, `sonarr_id`, `sonarr_url`, `radarr_id`, `radarr_url`.
 
 ---
 

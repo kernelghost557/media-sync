@@ -113,7 +113,7 @@ class SyncEngine:
         return Template(DEFAULT_MOVIE_TEMPLATE)
 
     def _write_note(self, path: Path, content: str, dry_run: bool) -> bool:
-        """Write note to file if not dry-run."""
+        """Write note to file if not dry-run. Returns True if file was created or updated."""
         if dry_run:
             logger.info(f"[DRY RUN] Would write: {path}")
             return True
@@ -124,9 +124,14 @@ class SyncEngine:
                 logger.info(f"Created note: {path}")
                 return True
             else:
-                # Optionally update if changed? For now skip.
-                logger.debug(f"Note already exists: {path}")
-                return False
+                existing = path.read_text()
+                if existing != content:
+                    path.write_text(content)
+                    logger.info(f"Updated note: {path}")
+                    return True
+                else:
+                    logger.debug(f"Note unchanged: {path}")
+                    return False
         except Exception as e:
             logger.error(f"Failed to write {path}: {e}")
             return False
@@ -179,10 +184,15 @@ class SyncEngine:
         if not self.vault_path:
             raise ValueError("Obsidian vault not configured")
 
+        # Determine if we should only sync favorites
+        include_favorites = False
+        if self.config.jellyfin and hasattr(self.config.jellyfin, 'sync_favorites_only'):
+            include_favorites = self.config.jellyfin.sync_favorites_only
+
         stats = {"movies": 0, "series": 0, "created": 0, "skipped": 0, "errors": 0}
         # Movies
         try:
-            movies = self.jellyfin_client.get_movies(include_favorite=False)
+            movies = self.jellyfin_client.get_movies(include_favorite=include_favorites)
             stats["movies"] = len(movies)
             for movie in movies:
                 try:
@@ -203,7 +213,7 @@ class SyncEngine:
 
         # Series
         try:
-            series_list = self.jellyfin_client.get_series()
+            series_list = self.jellyfin_client.get_series(include_favorite=include_favorites)
             stats["series"] = len(series_list)
             for series in series_list:
                 try:

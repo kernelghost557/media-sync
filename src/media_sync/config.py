@@ -12,6 +12,7 @@ class JellyfinConfig(BaseModel):
     url: str = Field(..., description="Base URL of Jellyfin server")
     api_key: str = Field(..., description="API key for authentication")
     username: Optional[str] = Field(None, description="User identifier (optional)")
+    sync_favorites_only: bool = Field(False, description="If true, only sync items marked as favorite by the user")
 
     @field_validator("url")
     @classmethod
