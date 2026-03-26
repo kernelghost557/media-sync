@@ -25,7 +25,7 @@
 | ✅ | Feature |
 |----|---------|
 | 🎯 | **Multi-source sync**: Jellyfin, Sonarr, Radarr (movies + series) |
-| 🔄 | **Bi-directional planned** (future: Obsidian → Jellyfin) |
+| 🔄 | **Bi-directional potential** (future: Obsidian → Jellyfin) |
 | 🏷️ | **Frontmatter generation** with aliases, rating, genres, IDs |
 | 🔗 | **Quick links** to play in Jellyfin / manage in Sonarr/Radarr |
 | 🩺 | **Healthcheck** to verify all service connections |
